@@ -1,65 +1,123 @@
-// variables
+var config = {
+    apiKey: "AIzaSyC6JFpFqezsOQtOZm6hw0kUz3eGsht89vc",
+    authDomain: "rps-multiplayer-2f628.firebaseapp.com",
+    databaseURL: "https://rps-multiplayer-2f628.firebaseio.com",
+    projectId: "rps-multiplayer-2f628",
+    storageBucket: "rps-multiplayer-2f628.appspot.com",
+    messagingSenderId: "340951436611"
+};
+	firebase.initializeApp(config);
 
-	// player 1 yourChoice
+var database = firebase.database();
 
-	// player 1 choice
+var inputsValid;
 
-	// player 2 yourChoice
+database.ref().on("child_added", function(snapshot) {
 
-	// player 2 choice
+	var trainNameCol = snapshot.val().name;
+	var destinationCol = snapshot.val().dest;
+	var frequencyCol = snapshot.val().freq;
+	var nextArrivalCol;
+	var minutesAwayCol;
+
+	var firstTimeConverted = moment(snapshot.val().firstTime, "hh:mm").subtract(1, "years");
+
+	var currentTime = moment();
+
+	var difference = moment().diff(moment(firstTimeConverted), "minutes");
+
+	var remainder = difference % snapshot.val().freq;
+
+	minutesAwayCol = snapshot.val().freq - remainder;
+
+	nextArrivalCol = currentTime.add(minutesAwayCol, "minutes");
+
+	$("tbody").append("<tr><td>" + trainNameCol + "</td><td>" + destinationCol + "</td><td>" + frequencyCol + "</td><td>" + moment(nextArrivalCol).format("hh:mm") + "</td><td>" + minutesAwayCol + "</td></tr>");
 
 
-	// player 1 wins
+});
 
-	// player 1 losses
+function validateInputs() {
 
-	// ties
+	var timeArray = ($("#firstTrainTimeInput").val().trim()).split();
+	console.log(timeArray);
 
-	// player 2 wins
+	if (parseInt($("#frequencyInput").val().trim()) === NaN) {
+		console.log("Not a number");
+	}
 
-	// player 2 losses
+	if ($("#trainNameInput").val().trim() !== "" && $("#destinationInput").val().trim()!== "" && $("#firstTrainTimeInput").val().trim() !== "" && $("#frequencyInput").val().trim() !== 0) {
+
+		if ($("#frequencyInput").val().trim() === NaN || $("#frequencyInput").val().trim() < 1 || $("#frequencyInput").val().trim() > 59) {
+
+			$("#inputsCommentary").addClass("shown");
+			$("#inputsCommentary").text("Please enter a valid frequency (number of minutes between 0 and 60)");
+
+		}
+
+		//else if (timeArray.length !== 5 || {
 
 
-	// player 1 comments
 
-	// player 2 comments
+		//}
+		
+		else {
 
-	// choiceCounter
+			$("#inputsCommentary").removeClass("shown");
+			$("#inputsCommentary").addClass("hidden");
+			inputsValid = true;
 
+		}
 
-// if / else logic for comparison
+	}
+	
+	else {
 
-// firebase
+		$("#inputsCommentary").addClass("shown");
+		$("#inputsCommentary").text("Please fill in all fields");
+		$("input").each(function() {
+			if ($(this).val() === "") {
+				$(this).addClass("empty");
+			}
+		});
 
-	// only allows two players
+	}
 
-		// ask for name
+}
 
-		// notify each player if they're player 1 and waiting for player 2 OR player 2, let's begin
+$(document).ready(function() {
 
-	// when you choose
+	$("#addBtn").on("click", function(e) {
 
-		// update FB with yourChoice
+		e.preventDefault();
 
-		// update player's own DOM with choice
+		validateInputs();
 
-		// if choiceCounter = 1
+		if (inputsValid === true) {
 
-			// notify opponent that they've chosen
+			var trainName = $("#trainNameInput").val().trim();
+			var destination = $("#destinationInput").val().trim();
+			var firstTrainTime = $("#firstTrainTimeInput").val().trim();
+			var frequency = $("#frequencyInput").val().trim();
 
-	// other player chooses
+			var newTrain = {
+				name: trainName,
+				dest: destination,
+				firstTime: firstTrainTime,
+				freq: frequency
+			};
 
-		// update FB with yourChoice
+			database.ref().push(newTrain);
 
-		// update player's DOM with their choice
+			$("#trainNameInput").val("");
+			$("#destinationInput").val("");
+			$("#firstTrainTimeInput").val("");
+			$("#frequencyInput").val("");
 
-	// display results
+		}
 
-		// reveal both choices on screen
+		inputsValid = false;
 
-		// update counter variables
+	});
 
-		// reset yourChoice
-
-		// 
-
+}); 

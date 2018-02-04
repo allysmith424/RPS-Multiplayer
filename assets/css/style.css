@@ -1,0 +1,42 @@
+header {
+	background-color: #1C140D;
+	color: #F2E9E1;
+	border-bottom: 3px solid #CBE86B;
+	font-family: 'Poppins', sans-serif;
+	padding-top: 30px;
+}
+
+.fa-train {
+	position: relative;
+	float: right;
+}
+
+.container {
+	max-width: 960px;
+}
+
+h5 {
+	letter-spacing: 5px;
+}
+
+form {
+	margin: 100px 0;
+}
+
+.empty {
+	background-color: #ff3845;
+}
+
+.hidden {
+	display: none;
+}
+
+.shown {
+	display: block;
+	color: #ff3845;
+	letter-spacing: 1.5px;
+}
+
+th {
+	font-weight: bolder;
+}
